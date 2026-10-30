@@ -1,0 +1,52 @@
+# Base44 development environment for Streama.
+#
+# Runs the Grails 3 app straight from the cloned source with `./gradlew bootRun`
+# against the project's built-in H2 datasource (the `docker` environment defined
+# in grails-app/conf/application.yml), so no external database is required.
+#
+#   docker compose -f docker-compose.base44.yml up -d --build
+#   http://localhost:3000/  (preview -> container port 8080)
+#
+# Data that must survive restarts lives in the named volumes:
+#   streama_data  -> /data (H2 database files + default upload directory /data/streama)
+#   gradle_cache  -> /root/.gradle (downloaded Gradle distribution + dependencies)
+services:
+  streama:
+    build:
+      context: .
+      dockerfile: docker/base44/dev.Dockerfile
+    working_dir: /app/streama
+    # Dev run from source: Gradle wrapper downloads Gradle 3.1 + dependencies on first
+    # start. `--no-daemon` keeps one process per container so reloads are predictable.
+    command:
+      - sh
+      - -ec
+      - exec ./gradlew bootRun --no-daemon -Dgrails.env=docker
+    ports:
+      # Main web entry point for the preview.
+      - "3000:8080"
+    volumes:
+      # Live source: edits in the repo are picked up by a bootRun restart.
+      - .:/app/streama
+      - gradle_cache:/root/.gradle
+      - streama_data:/data
+    environment:
+      - GRADLE_USER_HOME=/root/.gradle
+      # Passed through from the platform; unset outside the sandbox.
+      - BASE44_PREVIEW_MODE
+    healthcheck:
+      # "/" redirects to the login page once Tomcat + the Grails context are serving.
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8080/ || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 420s
+    restart: on-failure
+    labels:
+      base44.project: "Streama"
+      base44.kind: "web"
+      base44.port: "3000"
+
+volumes:
+  gradle_cache:
+  streama_data:
