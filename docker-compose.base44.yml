@@ -1,0 +1,61 @@
+# Base44 sandbox / development stack for Streama (Grails 3.2.6, JDK 8).
+#
+# Runs the application FROM THE CLONED SOURCE via `gradle bootRun` (Grails auto
+# reload / runtime asset-pipeline compilation), with MySQL 5.7 behind it using
+# the repo's own `mysql` environment (grails-app/conf/application.yml).
+#
+# First start downloads the Gradle 3.1 distribution and all Maven artifacts, so
+# it takes several minutes. Later starts reuse the gradle_home volume.
+services:
+  mysql:
+    image: mysql:5.7
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: streama_root_password
+      MYSQL_DATABASE: streama
+      MYSQL_USER: streama
+      MYSQL_PASSWORD: streama_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-pstreama_root_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  streama:
+    image: eclipse-temurin:8-jdk
+    restart: on-failure
+    working_dir: /app/streama
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3000:8080"
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DB=streama
+      - MYSQL_USER=streama
+      - MYSQL_PASSWORD=streama_password
+      - GRADLE_USER_HOME=/root/.gradle
+      - BASE44_PREVIEW_MODE
+    volumes:
+      - ./:/app/streama
+      - gradle_home:/root/.gradle
+      - streama_data:/data
+    command: ["sh", "-ec", "./gradlew --no-daemon --console=plain bootRun -Dgrails.env=mysql"]
+    healthcheck:
+      # "/" is the index action behind Spring Security: a 302 to the login page
+      # means Tomcat + the Grails context are answering. `-f` fails on 4xx/5xx.
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 600s
+
+volumes:
+  mysql_data:
+  gradle_home:
+  streama_data:
