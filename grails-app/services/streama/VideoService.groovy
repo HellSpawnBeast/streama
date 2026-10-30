@@ -168,6 +168,12 @@ class VideoService {
           id in genreList
         }
       }
+
+      if(params.nsfw == 'true'){
+        nsfw == true
+      }else{
+        nsfw != true
+      }
     }
     def movies =  movieQuery.list(max: max, offset: offset, sort: sort, order: order)
     def totalMovieCount = movieQuery.count()
@@ -218,6 +224,12 @@ class VideoService {
         genre{
           id in genreList
         }
+      }
+
+      if(params.nsfw == 'true'){
+        nsfw == true
+      }else{
+        nsfw != true
       }
     }
 

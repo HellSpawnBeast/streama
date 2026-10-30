@@ -22,6 +22,7 @@ class Video implements SimpleInstance{
   Integer outro_start
   Integer reportCount
   Boolean deleted = false
+  Boolean nsfw = false
   String imdb_id
 
   static hasMany = [files: File]

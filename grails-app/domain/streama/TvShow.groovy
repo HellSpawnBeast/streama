@@ -11,6 +11,7 @@ class TvShow implements SimpleInstance {
 
   Boolean deleted = false
   Boolean manualInput = false
+  Boolean nsfw = false
 
   Date dateCreated
   Date lastUpdated

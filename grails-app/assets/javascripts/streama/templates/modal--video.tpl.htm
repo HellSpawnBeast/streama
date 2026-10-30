@@ -72,6 +72,13 @@
           <textarea class="form-control" cols="30" rows="4" ng-model="episode.overview" placeholder="Overview"></textarea>
         </div>
       </div>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <label class="checkbox-inline">
+            <input type="checkbox" ng-model="episode.nsfw"/> NSFW (18+) — this episode is NSFW
+          </label>
+        </div>
+      </div>
 
       <div class="form-group" ng-if="episode.still_path && episode.id">
         <div class="col-sm-6">

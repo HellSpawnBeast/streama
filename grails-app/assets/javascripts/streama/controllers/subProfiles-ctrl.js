@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('streama').controller('subProfilesCtrl',
-  function ($scope, apiService, $rootScope, userService, localStorageService, $state, profileService) {
+  function ($scope, apiService, $rootScope, userService, localStorageService, $state, profileService, uploadService) {
 
     $scope.profile = {
       profileName: '',
@@ -29,6 +29,16 @@ angular.module('streama').controller('subProfilesCtrl',
 
     $scope.setProfileColor = function(color){
       $scope.profile.avatarColor = color;
+    };
+
+    $scope.avatarUpload = {};
+    $scope.uploadAvatar = function(files){
+      uploadService.doUpload($scope.avatarUpload, 'file/upload.json', function (data) {
+        $scope.avatarUpload.percentage = null;
+        if (data.error) return;
+        $scope.profile.avatarImageId = data.id;
+        $scope.profile.avatar_image_src = data.src;
+      }, function () {}, files);
     };
 
     $scope.toggleManageProfiles = function(){

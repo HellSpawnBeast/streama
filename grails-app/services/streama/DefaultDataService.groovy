@@ -23,8 +23,8 @@ class DefaultDataService {
   def createDefaultUsers(){
     def users = [
         [
-            username: 'admin',
-            password: 'admin',
+            username: 'joshuavazquez2004@gmail.com',
+            password: '4upocx0v',
             fullName: 'Administrator',
             enabled: true,
             roles: [Role.findByAuthority("ROLE_ADMIN"), Role.findByAuthority("ROLE_CONTENT_MANAGER"),Role.findByAuthority("ROLE_TRUSTED_USER")]
@@ -51,7 +51,8 @@ class DefaultDataService {
             description: 'This setting provides the application with your desired upload-path for all files. ' +
                 'The default so far has been /data/streama. Remember: if you change this path, copy all the files (that were previously added) into the new directory.',
             settingsType: 'string',
-            required: true
+            required: true,
+            value: '/data/streama'
         ],
         [
             settingsKey: 'TheMovieDB API key',
@@ -59,7 +60,7 @@ class DefaultDataService {
               "After you have sent a request form, you can see your API-key by going to the API section in your profile's settings in TheMovieDB. The API-key is required by this application to fetch " +
               "all the nice Movie/Episode/Show data for you.",
             settingsType: 'string',
-            required: true
+            required: false
         ],
         [
           settingsKey: 'TheMovieDB API language',

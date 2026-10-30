@@ -51,6 +51,10 @@ angular.module('streama').controller('dashCtrl',
       if(isDashType('home') || isDashType('watchlist')){
         vm.watchlistEntry = mediaListService.init(apiService.watchlistEntry.list, {sort: 'id', order: 'DESC'}, currentUser);
       }
+      if(isDashType('nsfw')){
+        vm.movie = mediaListService.init(apiService.dash.listMovies, {nsfw: true, sort: 'release_date', order: 'DESC'}, currentUser);
+        vm.tvShow = mediaListService.init(apiService.dash.listShows, {nsfw: true, sort: 'first_air_date', order: 'DESC'}, currentUser);
+      }
       if(isDashType('home')){
         vm.genericVideo = mediaListService.init(apiService.dash.listGenericVideos, {sort: 'title', order: 'ASC'}, currentUser);
         apiService.dash.listNewReleases().then(onNewReleasesLoaded);

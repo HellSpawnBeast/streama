@@ -133,6 +133,7 @@ class MarshallerService {
       returnArray['poster_image_src'] = movie.poster_image?.src
       returnArray['backdrop_image_src'] = movie.backdrop_image?.src
       returnArray['genre'] = movie.genre
+      returnArray['nsfw'] = movie.nsfw
 
       returnArray['files'] = movie.files.findAll { it.extension?.toLowerCase() != '.srt' && it.extension?.toLowerCase() != '.vtt' }
       returnArray['subtitles'] = movie.files.findAll { it.extension?.toLowerCase() == '.srt' || it.extension?.toLowerCase() == '.vtt' }
@@ -236,6 +237,7 @@ class MarshallerService {
         returnArray['manualInput'] = tvShow.manualInput
         returnArray['poster_image_src'] = tvShow.poster_image?.src
         returnArray['genre'] = tvShow.genre
+        returnArray['nsfw'] = tvShow.nsfw
 
         return returnArray
       }
@@ -518,6 +520,7 @@ class MarshallerService {
         returnArray['subtitles'] = movie.files.findAll { it.extension?.toLowerCase() == '.srt' || it.extension?.toLowerCase() == '.vtt' }
         returnArray['poster_image_src'] = movie.poster_image?.src
         returnArray['backdrop_image_src'] = movie.backdrop_image?.src
+        returnArray['nsfw'] = movie.nsfw
 
         if (movie.apiId) {
           returnArray['similarMovies'] = movie.similarMovies
@@ -646,6 +649,7 @@ class MarshallerService {
         returnArray['intro_start'] = episode.intro_start
         returnArray['intro_end'] = episode.intro_end
         returnArray['outro_start'] = episode.outro_start
+        returnArray['nsfw'] = episode.nsfw
         returnArray['air_date'] = episode.air_date
         returnArray['vote_average'] = episode.vote_average
         returnArray['apiId'] = episode.apiId

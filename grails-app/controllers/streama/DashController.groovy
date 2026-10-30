@@ -41,6 +41,7 @@ class DashController {
         name in favoriteGenreNames
       }
       deleted != true
+      nsfw != true
     }.list().findAll{it.hasFiles()}
 
     def tvShows = TvShow.where{
@@ -49,6 +50,7 @@ class DashController {
       }
       episodes.size() > 0
       deleted != true
+      nsfw != true
     }.list()
     result = movies + tvShows*.getFirstEpisode()
 
@@ -115,11 +117,13 @@ class DashController {
 
     def movies = Movie.where{
       deleted != true
+      nsfw != true
       title =~ "%${query}%"
     }.list()
 
     def tvShows = TvShow.where{
       deleted != true
+      nsfw != true
       name =~ "%${query}%"
     }.list()
 

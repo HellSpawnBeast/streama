@@ -35,6 +35,7 @@ class ProfileController {
         if(!profile.user){
           profile.user = springSecurityService.getCurrentUser()
         }
+        applyAvatarImage(profile)
         profile.save()
         respond profile, [status: CREATED]
     }
@@ -53,9 +54,25 @@ class ProfileController {
             return
         }
 
+        applyAvatarImage(profile)
         profile.save()
 
         respond profile, [status: OK]
+    }
+
+    private void applyAvatarImage(Profile profile) {
+        Long imageId = null
+        try {
+            imageId = request.JSON?.avatarImageId ? (request.JSON.avatarImageId as Long) : null
+        } catch (e) {
+            log.debug("no JSON body for profile avatar")
+        }
+        if (!imageId) {
+            imageId = params.long('avatarImageId')
+        }
+        if (imageId) {
+            profile.avatar_image = File.get(imageId)
+        }
     }
 
     @Transactional

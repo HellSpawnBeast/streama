@@ -5,7 +5,7 @@
     <div class="select-profile-container" ng-if="existingProfiles.length">
       <div class="item-profile-container" ng-repeat="subp in existingProfiles" ng-click="setCurrentProfile(subp)">
         <div class="avatar" ng-style="{'background-color': '#'+(subp.avatarColor || standardColor)}">
-          <img src="/assets/streama-profile-smiley.png" alt="">
+          <img ng-src="{{(subp.avatar_image && subp.avatar_image.src) || '/assets/streama-profile-smiley.png'}}" alt="">
         </div>
         <p class="profile-name">{{subp.profileName}}</p>
       </div>
@@ -37,7 +37,7 @@
     <div class="select-profile-container" ng-if="existingProfiles.length">
       <div class="item-editable-container" ng-repeat="subp in existingProfiles" ng-click="goToEditProfile(subp)">
         <div class="avatar" ng-style="{'background-color': '#'+(subp.avatarColor || standardColor)}">
-          <img src="/assets/streama-profile-smiley.png" alt="">
+          <img ng-src="{{(subp.avatar_image && subp.avatar_image.src) || '/assets/streama-profile-smiley.png'}}" alt="">
         </div>
         <div class="grey-editable-avatar"></div>
         <div class="edit-label-container"><p>{{'EDIT_BTN' | translate}}</p></div>
@@ -71,7 +71,7 @@
     <div class="form-container">
       <div class="choose-avatar-color">
         <div class="form-avatar" ng-style="{'background-color': '#' + profile.avatarColor || standardColor}">
-          <img src="/assets/streama-profile-smiley.png" alt="">
+          <img ng-src="{{profile.avatar_image_src || (profile.avatar_image && profile.avatar_image.src) || '/assets/streama-profile-smiley.png'}}" alt="">
         </div>
         <div class="colors-container">
           <div class="single-color"
@@ -79,6 +79,10 @@
                ng-style="{'background-color': '#'+col}"
                ng-click="setProfileColor(col)"></div>
         </div>
+      </div>
+      <div class="upload-profile-picture">
+        <div class="btn btn-dark" ngf-change="uploadAvatar($files)" ngf-select>Upload profile picture</div>
+        <span ng-show="avatarUpload.percentage">{{avatarUpload.percentage}}%</span>
       </div>
       <input type="text" class="form-control"
              ng-model="profile.profileName" placeholder="{{'ENTER_NAME' | translate}}">
