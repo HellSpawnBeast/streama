@@ -101,9 +101,19 @@ spring:
     groovy:
         template:
             check-template-location: false
+    http:
+        multipart:
+            # No cap on video uploads: -1 means unlimited size.
+            max-file-size: -1
+            max-request-size: -1
 
 ---
 grails:
+    assets:
+        # Serve the bundled + minified assets (vendor.js/application.css) instead of
+        # expanding every bundle into ~60 separate requests.
+        debug: false
+        bundle: true
     mime:
         disable:
             accept:
@@ -171,6 +181,14 @@ streama:
 
 server:
     use-forward-headers: true
+    compression:
+        enabled: true
+        min-response-size: 1024
+        mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml,image/svg+xml,font/ttf,font/woff,font/woff2,application/vnd.ms-fontobject
+    tomcat:
+        # Unlimited POST body for large video uploads (default is only 2MB).
+        max-http-post-size: -1
+        max-swallow-size: -1
 
 grails.controllers.upload.maxFileSize: 10000000000000 # 10TB
 grails.controllers.upload.maxRequestSize: 10000000000000 # 10TB

@@ -28,8 +28,27 @@ docker compose -f docker-compose.base44.yml logs -f streama
 - Uploaded media lives in the `streama_data` volume mounted at `/data`.
 - No external credentials are required to boot. The **TheMovieDB API key** is an in-app setting
   (Settings page), not an environment variable.
-- First login lands in the settings flow: the *Upload Directory* has no value yet, so set it there
-  (e.g. `/data/streama`) before adding media.
+- *Upload Directory* is seeded to `/data/streama` (the `streama_data` volume), so uploads work
+  out of the box; change it in Settings if you mount media elsewhere.
+
+## Media uploads & page weight
+
+- **No upload size cap.** `spring.http.multipart.max-file-size` / `max-request-size` are `-1`,
+  `server.tomcat.max-http-post-size` / `max-swallow-size` are `-1`, and
+  `grails.controllers.upload.maxFileSize` / `maxRequestSize` are 10TB. Verified: a 1.2 GB `.mp4`
+  posted to `/file/upload` with an admin session returns `200 {"id":…}` in ~18 s.
+- Uploads stream to the container temp dir and are then moved to
+  `<Upload Directory>/upload/<sha256><ext>` (currently `/data/streama`). The directory is
+  configurable in Settings → *Upload Directory* (extra read-only folders: *Second Directory*), so
+  media can live wherever you mount it — but budget 2× the file size free during an upload.
+- **Page weight / load time:** `grails.assets.bundle: true` + `grails.assets.debug: false` serve
+  the bundled `vendor.js` / `streama.js` / `application.css` (6 requests, ~1 MB gzipped) instead of
+  ~60-160 separately expanded files (4.3 MB uncompressed). Tomcat gzip (`server.compression`) is
+  on. Asset-pipeline still answers `Cache-Control: no-cache` under `bootRun`, so every reload
+  re-fetches the bundles — expected here.
+- Quick check: `curl -s http://localhost:3000/login/auth | grep -c 'assets/'` should be small (~6).
+  Both fixes live in `grails-app/conf/application.yml`, so they need
+  `docker compose -f docker-compose.base44.yml restart streama`.
 
 ## Dev loop
 
