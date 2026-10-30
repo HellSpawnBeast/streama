@@ -24,7 +24,8 @@ docker compose -f docker-compose.base44.yml logs -f streama
   environment** (`grails-app/conf/application.yml`), which reads `MYSQL_HOST`, `MYSQL_PORT`,
   `MYSQL_DB`, `MYSQL_USER`, `MYSQL_PASSWORD` (Spring relaxed binding of `${mysql_host:…}`).
 - Hibernate `dbCreate: update` creates the schema; `BootStrap.groovy` seeds the roles, the default
-  users and the default settings. Credentials out of the box: **admin / admin**.
+  users and the default settings. The seeded admin account (username/password) is defined in
+  `grails-app/services/streama/DefaultDataService.groovy` (`createDefaultUsers`).
 - Uploaded media lives in the `streama_data` volume mounted at `/data`.
 - No external credentials are required to boot. The **TheMovieDB API key** is an in-app setting
   (Settings page), not an environment variable.
@@ -37,6 +38,9 @@ docker compose -f docker-compose.base44.yml logs -f streama
   `server.tomcat.max-http-post-size` / `max-swallow-size` are `-1`, and
   `grails.controllers.upload.maxFileSize` / `maxRequestSize` are 10TB. Verified: a 1.2 GB `.mp4`
   posted to `/file/upload` with an admin session returns `200 {"id":…}` in ~18 s.
+  `FileController.upload` renders JSON explicitly, so the endpoint answers JSON with or without the
+  `.json` suffix. It used to `respond`, which made a plain `/file/upload` request try to resolve an
+  HTML view named `upload` and throw `Could not resolve view with name 'upload'` (500).
 - Uploads stream to the container temp dir and are then moved to
   `<Upload Directory>/upload/<sha256><ext>` (currently `/data/streama`). The directory is
   configurable in Settings → *Upload Directory* (extra read-only folders: *Second Directory*), so

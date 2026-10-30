@@ -232,7 +232,9 @@ class FileController {
   def upload(){
     def file = uploadService.upload(request, params)
     if(file!=null){
-    	respond file
+      // Always answer JSON: content negotiation on this endpoint would otherwise try to
+      // resolve an HTML view named 'upload' (500) for clients that don't ask for .json.
+      render file as JSON
     }else{
     	render status: 415
     }
